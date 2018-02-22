@@ -1,0 +1,79 @@
+//============================================================================
+// Name        : P2.cpp
+// Author      : David Zych
+// Version     :
+// Copyright   : Your copyright notice
+// Description : Letter Frequencies in C++, Ansi-style
+//============================================================================
+
+#include <fstream>
+#include <iostream>
+#include <iomanip>
+#include <math.h>
+#include <cmath>
+using namespace std;
+
+int main() {
+	char letter;
+	float totalValue;
+	float englishFreq = 8.167 + 1.492 + 2.782 + 4.253 + 12.702 + 2.228 + 2.015
+			+ 6.094 + 6.966 + 0.153 + 0.772 + 4.025 + 2.406 + 6.749 + 7.507
+			+ 1.929 + 0.095 + 5.987 + 6.327 + 9.056 + 2.758 + 0.978 + 2.360
+			+ 0.150 + 1.974 + 0.074;
+	float italianFreq = 11.745 + 0.927 + 4.501 + 3.736 + 11.792 + 1.153 + 1.644
+			+ 0.636 + 10.143 + 0.011 + 0.009 + 6.510 + 2.512 + 6.883 + 9.832
+			+ 3.056 + 0.505 + 6.367 + 4.981 + 5.623 + 3.011 + 2.097 + 0.033
+			+ 0.003 + 0.020 + 1.181;
+	float textfileFreq = 0;
+	float englishError = 0;
+	float italianError = 0;
+	ifstream input("output1.txt", ios_base::binary);
+	if (!input) {
+		cerr << "error: can't open file\n";
+		return -1;
+	}
+
+	size_t count[12000];
+	fill_n(count, 12000, 0);
+
+	for (size_t i = 0; i < 12000; ++i) {
+		input.get(letter); // scans input
+		if (isalpha(letter)) {  // checks if its in the alphabet
+			if (isupper(letter)) { // checks if its uppercase, change it to lowercase
+				letter = tolower(letter);
+			}
+			totalValue++;
+			++count[uint8_t(letter)];
+		}
+	}
+
+	for (size_t size = 0; size < 12000; ++size) {
+		if (count[size] && isgraph(size)) { // non-zero counts of printable characters
+			cout << fixed;
+			cout << setprecision(3);
+			cout << char(size) << " = " << (count[size] / totalValue) * 100
+			<< "%" << '\n';
+			textfileFreq = textfileFreq + ((count[size] / totalValue) *100);
+		}
+	}
+	cout << "The relative english frequency is " << englishFreq << "%" << endl;
+	cout << "The relative italian frequency is " << italianFreq << "%" << endl;
+	cout << "The frequency of the text file is " << textfileFreq << "%" << endl;
+	englishError = englishFreq - textfileFreq;
+	italianError = italianFreq - textfileFreq;
+	cout << "The difference of the English frequency and the text file is " << fabs(englishError) << "%" << endl;
+	cout << "The difference of the Italian frequency and the text file is " << fabs(italianError) << "%" << endl;
+	if (englishError > italianError) {
+		cout << "The text file is in English!" << endl;
+		return 0;
+	}
+	else if (englishError < italianError) {
+		cout << "The text file is in Italian!" << endl;
+		return 0;
+	}
+	else if (englishError == italianError) {
+		cout << "The text file could be either English or Italian." << endl;
+		return 0;
+	}
+}
+
